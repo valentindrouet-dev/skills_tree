@@ -163,7 +163,8 @@
     { id:'n1', title:'Analyse', text:'Sans mouvement, vous effectuez 1 analyse standard.', req:[], unlock:['n2','n3'], category:'Actions', color:'grey', points:2 },
     { id:'n2', title:'Analyses supérieures', text:'Vous pouvez effectuer des analyses de niveau 2.', req:['n1'], unlock:['n4'], category:'Actions', color:'green', points:2 },
     { id:'n3', title:'Endu +2', text:"Augmente l'Endurance de +2.", req:['n1'], unlock:[], category:'Stat-Endu', color:'teal', points:1 },
-    { id:'n4', title:'Dégâts +2', text:'Augmente les dégâts de +2.', req:['n2'], unlock:[], category:'Stat-Dégâts', color:'cream', points:1 }
+    { id:'n4', title:'Dégâts +2', text:'Augmente les dégâts de +2.', req:['n2'], unlock:[], category:'Stat-Dégâts', color:'cream', points:1 },    
+    { id:'n5', title:'Onde Infusée', text:'Vos Infusions appliquent Onde.', req:['n4'], unlock:[], category:'Actions', color:'green', points:1 },
   ];
 
   // Liens visuels
@@ -171,6 +172,7 @@
     {from:'n1', to:'n2'},
     {from:'n1', to:'n3'},
     {from:'n2', to:'n4'}
+    {from:'n4', to:'n5'}
   ];
 
   // --------- GÉOMÉTRIE & TRAITS ---------
