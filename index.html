@@ -3,11 +3,11 @@
 <head>
 <meta charset="utf-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1" />
-<title>Amertüme — Mini Arbre de Compétences</title>
+<title>Amertüme — Arbre de Talents</title>
 <style>
   :root{
     --bg:#0b0f14; --grid:#0e1520; --card:#181f2a; --stroke:#0b0f14;
-    --node-grey:#a9b0b6; --node-green:#3e7a47; --node-teal:#61a7a8; --node-cream:#e8e6de; --node-red:#b94a48;
+    --node-grey:#8a9299; --node-green:#3e7a47; --node-teal:#61a7a8; --node-cream:#e8e6de; --node-red:#b94a48;
     --txt:#f0f6ff; --muted:#a8b0bd; --accent:#7dd3fc; --link:#8aa1b6; --link-active:#facc15;
     --shadow:0 8px 24px rgba(0,0,0,.35);
   }
@@ -20,13 +20,13 @@
   .tree{position:relative; background:linear-gradient(180deg,#0d1420,#0c121a); border:1px solid #1a2434; border-radius:16px; padding:32px; box-shadow:var(--shadow); overflow:hidden}
   .grid-bg{position:absolute; inset:0; background-image: radial-gradient(#111927 1px, transparent 1px); background-size: 18px 18px; opacity:.35; pointer-events:none}
 
-  .node{position:absolute; min-width:220px; max-width:280px; padding:14px 16px; border-radius:16px; border:2px solid #101826; box-shadow:0 6px 18px rgba(0,0,0,.35), inset 0 1px 0 rgba(255,255,255,.06);
-        cursor:pointer; user-select:none; transition: transform .12s ease, filter .12s ease, box-shadow .12s ease}
-  .node.small{min-width:120px; max-width:160px; text-align:center}
-  .node.grey{background: linear-gradient(#b4bcc3,#9aa3aa); color:#111827}
+  .node{position:absolute; width:260px; min-height:80px; padding:14px 16px; border-radius:16px; border:2px solid #101826; box-shadow:0 6px 18px rgba(0,0,0,.35), inset 0 1px 0 rgba(255,255,255,.06); cursor:pointer; user-select:none; transition: transform .12s ease, filter .12s ease, box-shadow .12s ease}
+  .node.small{width:140px; min-height:64px; text-align:center}
+  .node.grey{background: linear-gradient(#7c838a,#6a7076); color:#ffffff}
   .node.green{background: linear-gradient(#4a8d54,#356f3e)}
   .node.teal{background: linear-gradient(#74bdbe,#529a9b)}
   .node.cream{background: linear-gradient(#f3f1ea,#dfddd5); color:#1b2430}
+  .node.red{background: linear-gradient(#d45b58,#aa3e3c); color:#fff}
   .node .title{font-weight:800; font-size:18px; line-height:1.1; margin-bottom:4px; text-shadow:0 1px 0 rgba(0,0,0,.35)}
   .node .subtitle{font-weight:700; font-size:16px; text-shadow:0 1px 0 rgba(0,0,0,.35)}
   .node .body{font-weight:700; font-size:17px; text-align:center; text-shadow:0 1px 0 rgba(0,0,0,.35)}
@@ -34,7 +34,7 @@
 
   .node:hover{transform: translateY(-1px); filter:brightness(1.03)}
   .node.active{outline:3px solid #facc15; box-shadow:0 0 10px rgba(250,204,21,.7),0 0 20px rgba(250,204,21,.4)}
-  .node.locked{filter: grayscale(0.65) brightness(0.85); opacity:.85}
+  .node.locked{filter: grayscale(0.65) brightness(0.85);}
 
   .badge-check{position:absolute; left:-10px; top:-10px; width:26px; height:26px; border-radius:8px; background:#0f1522; border:2px solid #24324a; display:flex; align-items:center; justify-content:center; color:#9fb3c8; font-size:14px; box-shadow:0 4px 10px rgba(0,0,0,.4)}
   .node.active .badge-check{background:#153b2a; border-color:#2d6b4c; color:#bff3d1}
@@ -42,8 +42,8 @@
   .node.active .badge-points{background:#153b2a; border-color:#2d6b4c; color:#bff3d1}
 
   svg#links{position:absolute; inset:0; pointer-events:none; filter: drop-shadow(0 2px 0 rgba(0,0,0,.35))}
-  .link{stroke: var(--link); stroke-width:3; fill:none; stroke-linecap:round; transition:stroke .2s ease, stroke-width .2s ease}
-  .link.active{stroke: var(--link-active); stroke-width:4; filter: drop-shadow(0 0 2px rgba(250,204,21,.6)) drop-shadow(0 0 8px rgba(250,204,21,.25))}
+  .link{stroke: var(--link); stroke-width:3; fill:none; stroke-linecap:round; transition:stroke .2s ease, stroke-width .2s ease; opacity:1}
+  .link.active{stroke: var(--link-active); stroke-width:4; filter: drop-shadow(0 0 2px rgba(250,204,21,.6)) drop-shadow(0 0 8px rgba(250,204,21,.25)); opacity:1}
 
   .tooltip{position:absolute; z-index:5; pointer-events:none; transform:translate(-50%, -110%); background:#101826; color:#dbe6f3; border:1px solid #24324a; border-radius:10px; padding:10px 12px; font-size:13px; box-shadow:0 8px 20px rgba(0,0,0,.35); opacity:0; transition:opacity .12s ease}
   .tooltip .tt-title{font-weight:800; margin-bottom:4px}
@@ -53,7 +53,10 @@
 
   /* Feuille de compétences */
   .sheet{margin-top:16px; background:linear-gradient(180deg,#0d1420,#0c121a); border:1px solid #1a2434; border-radius:16px; padding:16px; box-shadow:var(--shadow)}
-  .sheet h2{margin:0 0 8px; font-size:18px}
+  .sheet h2{margin:0; font-size:18px}
+  .sheet-header{display:flex; align-items:center; justify-content:space-between; gap:12px; margin-bottom:8px}
+  .btn{background:#0f1522; color:#e6edf6; border:1px solid #24324a; border-radius:10px; padding:8px 12px; cursor:pointer; box-shadow:0 4px 10px rgba(0,0,0,.35)}
+  .btn:active{transform:translateY(1px)}
   .sheet .muted{color:var(--muted); font-size:13px; margin:0 0 12px}
 
   .stats-section{display:flex; gap:16px; margin-bottom:16px}
@@ -70,16 +73,53 @@
   .skill-tag{border-radius:10px; padding:10px 12px; box-shadow:0 2px 6px rgba(0,0,0,.3)}
   .skill-tag .st-title{font-weight:700}
   .skill-tag .st-desc{font-size:12px; margin-top:4px}
-  .skill-tag.grey{background: linear-gradient(#b4bcc3,#9aa3aa); border:1px solid #8e98a0; color:#111827}
+  .skill-tag.grey{background: linear-gradient(#7c838a,#6a7076); border:1px solid #5c6166; color:#ffffff}
   .skill-tag.green{background: linear-gradient(#4a8d54,#356f3e); border:1px solid #2d5a3c; color:#e9f7ed}
   .skill-tag.teal{background: linear-gradient(#74bdbe,#529a9b); border:1px solid #467f80; color:#0e1a22}
   .skill-tag.cream{background: linear-gradient(#f3f1ea,#dfddd5); border:1px solid #c9c7be; color:#1b2430}
+  .skill-tag.red{background: linear-gradient(#d45b58,#aa3e3c); border:1px solid #8f3432; color:#fff}
+  
+  /* Impression */
+  @media print{
+    @page{ size: A4 portrait; margin: 10mm; }
+    html, body{ background:#fff !important; }
+    body{ -webkit-print-color-adjust: exact; print-color-adjust: exact; }
+    .wrap{ max-width:none; width: 180mm; margin:0; padding:0; }
+    h1, .lead, .legend, #btn-reset{ display:none !important; }
+    .tree{ display:none !important; }
+    .sheet{ page-break-inside: avoid; border:1px solid #ccc; box-shadow:none; background:#fff; }
+    .grid-bg{ opacity:.15 }
+    .node, .skill-tag{ box-shadow:none }
+  }
+
+  /* ----- Modal Édition ----- */
+  .modal{position:fixed; inset:0; display:none; align-items:center; justify-content:center; z-index:9999;}
+  .modal.show{display:flex;}
+  .modal-backdrop{position:absolute; inset:0; background:rgba(3,8,15,.65); backdrop-filter:blur(2px);}  
+  .modal-dialog{position:relative; width:min(640px,92vw); background:linear-gradient(180deg,#0c121a,#0a1016);
+    border:1px solid #1a2434; border-radius:18px; box-shadow:0 24px 80px rgba(0,0,0,.6); color:#e6edf6}
+  .modal-head{display:flex; align-items:center; justify-content:space-between; padding:16px 18px 6px 18px}
+  .modal-title{font-size:18px; font-weight:800}
+  .modal-x{background:transparent; border:0; color:#9fb3c8; font-size:26px; line-height:1; cursor:pointer}
+  .modal-body{padding:10px 18px 6px 18px}
+  .modal-label{display:block; font-size:12px; color:#a8b0bd; margin:8px 0}
+  .modal-input{width:100%; margin-top:6px; background:#0f1522; color:#e6edf6; border:1px solid #24324a; border-radius:12px; padding:10px 12px; outline:none}
+  .modal-row{display:flex; gap:12px; align-items:flex-end}
+  .flex-1{flex:1}
+  .modal-foot{display:flex; justify-content:flex-end; gap:10px; padding:14px 18px 18px 18px}
+  .btn-primary{background:#7dd3fc; color:#0b0f14; border:1px solid #65c2ee}
+  .btn-ghost{background:#0f1522; color:#e6edf6; border:1px solid #24324a}
+  .btn-primary:active,.btn-ghost:active{transform:translateY(1px)}
 </style>
 </head>
 <body>
   <div class="wrap">
-    <h1>Amertüme — Arbre de Compétences</h1>
-    <p class="lead">L'Alchimiste choisit une spécialisation Apothicaire ou Artificier.</p>
+    <div id="print-header" style="display:none">
+      <div class="title">Amertüme — Arbre de compétences</div>
+      <div class="meta">Points: <span id="print-points">0</span> · <span id="print-date"></span></div>
+    </div>
+    <h1>Amertüme — Arbre de Talents</h1>
+    <p class="lead">Cmd/Ctrl + clic sur un talent pour <b>éditer</b>. Connexions surlignées en <b>jaune</b> quand actives.</p>
     <div id="points-bar" style="display:flex; align-items:center; gap:10px; margin:8px 0 12px 0;">
       <div style="font-size:14px; color:var(--muted);">Points dépensés :</div>
       <div id="points-counter" style="background:#0f1522; border:1px solid #24324a; color:#e6edf6; font-weight:800; padding:6px 10px; border-radius:10px; min-width:56px; text-align:center; box-shadow:0 2px 8px rgba(0,0,0,.25)">0</div>
@@ -87,13 +127,14 @@
 
     <div class="tree" id="tree" style="height:470px">
       <div class="grid-bg"></div>
+      <button id="btn-add" title="Ajouter un nouveau talent" style="position:absolute; right:140px; top:16px; z-index:10; background:#0f1522; color:#e6edf6; border:1px solid #24324a; border-radius:10px; padding:8px 12px; cursor:pointer; box-shadow:0 4px 10px rgba(0,0,0,.35)">Ajouter</button>
       <button id="btn-reset" style="position:absolute; right:16px; top:16px; z-index:10; background:#0f1522; color:#e6edf6; border:1px solid #24324a; border-radius:10px; padding:8px 12px; cursor:pointer; box-shadow:0 4px 10px rgba(0,0,0,.35)">Réinitialiser</button>
       <svg id="links" viewBox="0 0 1000 600" preserveAspectRatio="none"></svg>
 
       <!-- Nœuds -->
       <div class="node grey" id="n1" style="left:60px; top:70px">
         <div class="title">Analyse</div>
-        <div class="desc">Sans mouvement, vous effectuez <b>1 analyse standard</b>.</div>
+        <div class="desc">Sans mouvement, vous effectuez une analyse standard</div>
         <div class="badge-check">☑︎</div>
         <div class="badge-points">1</div>
       </div>
@@ -119,13 +160,6 @@
         <div class="badge-points">1</div>
       </div>
 
-      <div class="node green" id="n5" style="left:780px; top:250px">
-        <div class="subtitle">Onde Infusée</div>
-        <div class="desc">Vos Infusions appliquent Onde.</div>
-        <div class="badge-check">☐</div>
-        <div class="badge-points">2</div>
-      </div>
-
       <div id="tooltip" class="tooltip">
         <div class="tt-title">Titre</div>
         <div class="tt-body">Description…</div>
@@ -133,13 +167,75 @@
     </div>
 
     <div class="sheet" id="sheet">
-      <h2>Feuille de compétences</h2>
+      <div class="sheet-header">
+        <h2>Feuille de personnage</h2>
+        <div class="actions">
+          <button id="btn-print" class="btn">Imprimer</button>
+        </div>
+      </div>
       <p class="muted">Résumé en temps réel des compétences <b>débloquées</b>, regroupées par catégorie avec limites.</p>
       <div class="stats-section" id="stats"></div>
       <div id="skills-sections"></div>
     </div>
 
-    <div class="legend">Astuce : maintiens <b>Shift</b> en cliquant pour activer/désactiver plusieurs nœuds sans tenir compte des prérequis.</div>
+    <div class="legend">Astuce : maintiens <b>Shift</b> pour activer/désactiver sans vérifier les prérequis. <b>Cmd/Ctrl+clic</b> pour éditer un talent.</div>
+  </div>
+
+  <!-- Modal d’édition de talent -->
+  <div id="talent-modal" class="modal" aria-hidden="true">
+    <div class="modal-backdrop"></div>
+    <div class="modal-dialog" role="dialog" aria-modal="true" aria-labelledby="tm-title">
+      <div class="modal-head">
+        <div id="tm-title" class="modal-title">✏️ Modifier le talent</div>
+        <button class="modal-x" id="tm-close" aria-label="Fermer">×</button>
+      </div>
+      <div class="modal-body">
+        <label class="modal-label">Titre
+          <input id="tm-input-title" class="modal-input" type="text" placeholder="Nom du talent" />
+        </label>
+        <label class="modal-label">Description
+          <textarea id="tm-input-desc" class="modal-input" rows="6" placeholder="Décris l’effet du talent…"></textarea>
+        </label>
+        <div class="modal-row">
+          <label class="modal-label flex-1">Couleur
+            <select id="tm-input-color" class="modal-input">
+              <option value="grey">Gris</option>
+              <option value="green">Vert</option>
+              <option value="teal">Turquoise</option>
+              <option value="cream">Crème</option>
+              <option value="red">Rouge</option>
+            </select>
+          </label>
+          <label class="modal-label" style="width:160px">Coût (points)
+            <input id="tm-input-points" class="modal-input" type="number" min="0" step="1" />
+          </label>
+        </div>
+        <div class="modal-row">
+          <label class="modal-label flex-1">Catégorie
+            <select id="tm-input-category" class="modal-input">
+              <option value="Actions">Actions</option>
+              <option value="Réactions">Réactions</option>
+              <option value="Passif">Passif</option>
+              <option value="Améliorations">Améliorations</option>
+              <option value="Maîtrises">Maîtrises</option>
+              <option value="Expertises">Expertises</option>
+              <option value="Stat-Endu">Stat-Endu</option>
+              <option value="Stat-Dégâts">Stat-Dégâts</option>
+            </select>
+          </label>
+          <label class="modal-label" style="width:120px">Position X
+            <input id="tm-input-x" class="modal-input" type="number" step="1" />
+          </label>
+          <label class="modal-label" style="width:120px">Position Y
+            <input id="tm-input-y" class="modal-input" type="number" step="1" />
+          </label>
+        </div>
+      </div>
+      <div class="modal-foot">
+        <button class="btn btn-ghost" id="tm-cancel">Annuler</button>
+        <button class="btn btn-primary" id="tm-save">💾 Sauvegarder</button>
+      </div>
+    </div>
   </div>
 
 <script>
@@ -147,6 +243,8 @@
   const $ = (s, r=document)=> r.querySelector(s);
   const $$ = (s, r=document)=> Array.from(r.querySelectorAll(s));
   const svg = $('#links');
+  const TREE = $('#tree');
+  const NODE_W = 260, NODE_H = 80, NODE_W_SMALL = 140, NODE_H_SMALL = 80;
 
   // Catégories et limites
   const categories = {
@@ -158,13 +256,12 @@
     'Expertises': 4
   };
 
-  // Définitions des nœuds
+  // Définitions des nœuds (doit matcher le DOM)
   const nodes = [
-    { id:'n1', title:'Analyse', text:'Sans mouvement, vous effectuez 1 analyse standard.', req:[], unlock:['n2','n3'], category:'Actions', color:'grey', points:2 },
+    { id:'n1', title:'Analyse', text:'Sans mouvement, vous effectuez une analyse standard', req:[], unlock:['n2','n3'], category:'Actions', color:'grey', points:1 },
     { id:'n2', title:'Analyses supérieures', text:'Vous pouvez effectuer des analyses de niveau 2.', req:['n1'], unlock:['n4'], category:'Actions', color:'green', points:2 },
     { id:'n3', title:'Endu +2', text:"Augmente l'Endurance de +2.", req:['n1'], unlock:[], category:'Stat-Endu', color:'teal', points:1 },
-    { id:'n4', title:'Dégâts +2', text:'Augmente les dégâts de +2.', req:['n2'], unlock:[], category:'Stat-Dégâts', color:'cream', points:1 },    
-    { id:'n5', title:'Onde Infusée', text:'Vos Infusions appliquent Onde.', req:['n4'], unlock:[], category:'Actions', color:'green', points:1 },
+    { id:'n4', title:'Dégâts +2', text:'Augmente les dégâts de +2.', req:['n2'], unlock:[], category:'Stat-Dégâts', color:'cream', points:1 }
   ];
 
   // Liens visuels
@@ -172,16 +269,24 @@
     {from:'n1', to:'n2'},
     {from:'n1', to:'n3'},
     {from:'n2', to:'n4'}
-    {from:'n4', to:'n5'}
   ];
 
   // --------- GÉOMÉTRIE & TRAITS ---------
-  function rectOf(el){ const r = el.getBoundingClientRect(); const p = svg.getBoundingClientRect(); return {x:r.left - p.left, y:r.top - p.top, w:r.width, h:r.height}; }
+  function centerOf(el){
+    const svgRect = svg.getBoundingClientRect();
+    const treeRect = TREE.getBoundingClientRect();
+    const left = parseInt(el.style.left || el.offsetLeft, 10) || 0;
+    const top  = parseInt(el.style.top  || el.offsetTop, 10) || 0;
+    const isSmall = el.classList.contains('small');
+    const W = isSmall ? NODE_W_SMALL : NODE_W;
+    const H = isSmall ? NODE_H_SMALL : NODE_H;
+    const cx = (treeRect.left + left + W/2) - svgRect.left;
+    const cy = (treeRect.top + top + H/2 - 10) - svgRect.top;
+    return {x: cx, y: cy};
+  }
   function pathFrom(a, b){
-    const p1 = rectOf(a), p2 = rectOf(b);
-    const x1 = p1.x + p1.w/2, y1 = p1.y + p1.h/2;
-    const x2 = p2.x + p2.w/2, y2 = p2.y + p2.h/2;
-    return { d:`M ${x1},${y1} L ${x2},${y2}` };
+    const p1 = centerOf(a), p2 = centerOf(b);
+    return { d: `M ${p1.x},${p1.y} L ${p2.x},${p2.y}` };
   }
   function drawLinks(){
     svg.innerHTML = '';
@@ -217,53 +322,49 @@
     });
   }
 
-  // --------- COMPTEUR DE POINTS ---------
+  // --------- POINTS & FEUILLE ---------
   function totalPoints(){
     return nodes.reduce((sum,n)=> sum + (state.get(n.id)? (n.points||0):0), 0);
   }
   function renderPoints(){
-    const el = document.getElementById('points-counter');
-    if(el) el.textContent = totalPoints();
+    const el = $('#points-counter'); if(el) el.textContent = totalPoints();
   }
-
-  // --------- FEUILLE (CATEGORIES + STATS) ---------
   function renderSheet(){
     renderPoints();
-    const container = $('#skills-sections');
-    container.innerHTML = '';
 
-    for(const [cat,limit] of Object.entries(categories)){
-      const section = document.createElement('div');
-      section.className = 'skills-section';
-      const actives = nodes.filter(n=> state.get(n.id) && n.category===cat);
-      const used = Math.min(actives.length, limit);
-
-      section.innerHTML = `<h3>${cat} <span class="counter">${used}/${limit}</span></h3><div class="skills-list"></div>`;
-      const list = section.querySelector('.skills-list');
-
-      actives.slice(0,limit).forEach(n=>{
-        const item = document.createElement('div');
-        item.className = `skill-tag ${n.color}`;
-        item.innerHTML = `<div class="st-title">${n.title}</div><div class="st-desc">${n.text}</div>`;
-        list.appendChild(item);
-      });
-      if(actives.length===0){
-        list.innerHTML = '<div class="skill-tag"><div class="st-title">—</div></div>';
-      }
-      container.appendChild(section);
-    }
-
-    // Statistiques (toujours visibles)
+    // Stats toujours visibles
     const statsEl = $('#stats');
     const enduCount = nodes.filter(n=> n.category==='Stat-Endu' && state.get(n.id)).length;
     const degatsCount = nodes.filter(n=> n.category==='Stat-Dégâts' && state.get(n.id)).length;
     const endu = enduCount * 2;
     const degats = degatsCount * 2;
-
     statsEl.innerHTML = `
       <div class="stat-box"><div class="stat-label endu">Endu</div><div class="stat-value">${endu}</div></div>
       <div class="stat-box"><div class="stat-label degats">Dégâts</div><div class="stat-value">${degats}</div></div>
     `;
+
+    // Sections par catégorie
+    const container = $('#skills-sections');
+    container.innerHTML = '';
+    for(const [cat,limit] of Object.entries(categories)){
+      const section = document.createElement('div');
+      section.className = 'skills-section';
+      const actives = nodes.filter(n=> state.get(n.id) && n.category===cat);
+      const used = Math.min(actives.length, limit);
+      section.innerHTML = `<h3>${cat} <span class="counter">${used}/${limit}</span></h3><div class=\"skills-list\"></div>`;
+      const list = section.querySelector('.skills-list');
+      if(actives.length===0){
+        list.innerHTML = '<div class="skill-tag"><div class="st-title">—</div></div>';
+      }else{
+        actives.slice(0,limit).forEach(n=>{
+          const item = document.createElement('div');
+          item.className = `skill-tag ${n.color}`;
+          item.innerHTML = `<div class=\"st-title\">${n.title}</div><div class=\"st-desc\">${n.text}</div>`;
+          list.appendChild(item);
+        });
+      }
+      container.appendChild(section);
+    }
   }
 
   // --------- ACTIONS ---------
@@ -293,7 +394,6 @@
     updateLocks();
     updateLinks();
     renderSheet();
-    renderPoints();
   }
 
   // Interactions sur les nœuds
@@ -301,13 +401,76 @@
     const el = $('#'+n.id);
     if(!el) return;
     el.addEventListener('click', (ev)=>{
+      // ÉDITION si Cmd/Ctrl + clic
+      if(ev.metaKey || ev.ctrlKey){
+        ev.preventDefault(); ev.stopPropagation();
+        openEditModal(n.id);
+        return;
+      }
       const multi = ev.shiftKey; // ignore les prérequis si Shift
       if(!multi && !meetsReq(n.id) && !state.get(n.id)) return; // bloqué si requis non remplis
       setActive(n.id, !state.get(n.id));
     });
   });
 
-  // Bouton Réinitialiser : décoche TOUT, y compris la base
+  // Boutons : Réinitialiser
+  // --- Bouton Ajouter ---
+  function addNewNode(){
+    // calcul dernier id numérique sans regex d'échappement
+    const lastNum = nodes.reduce((maxNum, n)=>{
+      const digits = String(n.id).split('').filter(ch => ch >= '0' && ch <= '9').join('');
+      const num = parseInt(digits, 10) || 0;
+      return num > maxNum ? num : maxNum;
+    }, 0);
+    const lastId = 'n' + lastNum;
+    const newId  = 'n' + (lastNum + 1);
+
+    // position à droite du dernier
+    const lastEl = document.getElementById(lastId);
+    let left = 80, top = 80;
+    if(lastEl){
+      const lx = parseInt(lastEl.style.left || lastEl.offsetLeft, 10) || 0;
+      const ly = parseInt(lastEl.style.top  || lastEl.offsetTop, 10) || 0;
+      left = lx + 260; top = ly;
+    }
+
+    const def = { id:newId, title:'Nouveau Talent', text:'Talent à définir.', req:[lastId], unlock:[], category:'Actions', color:'green', points:1 };
+    nodes.push(def);
+    state.set(newId, false);
+    links.push({ from:lastId, to:newId });
+
+    const nodeDiv = document.createElement('div');
+    nodeDiv.className = 'node green';
+    nodeDiv.id = newId;
+    nodeDiv.style.left = left + 'px';
+    nodeDiv.style.top  = top  + 'px';
+    nodeDiv.innerHTML = '<div class="title">'+def.title+'</div>'+
+                        '<div class="desc">'+def.text+'</div>'+
+                        '<div class="badge-check">☐</div>'+
+                        '<div class="badge-points">1</div>';
+    document.getElementById('tree').appendChild(nodeDiv);
+
+    // interactions pour ce nouveau nœud (édition, activation, tooltip)
+    nodeDiv.addEventListener('click', function(ev){
+      if(ev.metaKey || ev.ctrlKey){ ev.preventDefault(); ev.stopPropagation(); openEditModal(newId); return; }
+      const multi = ev.shiftKey;
+      if(!multi && !meetsReq(newId) && !state.get(newId)) return;
+      setActive(newId, !state.get(newId));
+    });
+    nodeDiv.addEventListener('mouseenter', function(){ showTT(nodeDiv, def.title, def.text); });
+    nodeDiv.addEventListener('mouseleave', function(){ const tt = document.getElementById('tooltip'); if(tt) tt.classList.remove('show'); });
+
+    updateLocks();
+    drawLinks();
+    updateLinks();
+    renderSheet();
+
+    console.log('%c➕ Nouveau talent créé','background:#153b2a;color:#bff3d1;padding:2px 6px;border-radius:6px', def, { linkedFrom:lastId });
+  }
+
+  const addBtn = document.getElementById('btn-add');
+  if(addBtn){ addBtn.addEventListener('click', addNewNode); }
+
   const resetBtn = $('#btn-reset');
   if(resetBtn){
     resetBtn.addEventListener('click', ()=>{
@@ -315,16 +478,14 @@
       updateLocks();
       updateLinks();
       renderSheet();
-    renderPoints();
     });
   }
 
   // --------- INIT ---------
-  applyActive('n1', true); // état initial: base active (modifiable si tu préfères vide)
+  applyActive('n1', true);
   updateLocks();
   updateLinks();
   renderSheet();
-    renderPoints();
 
   // --------- TOOLTIP ---------
   const tt = $('#tooltip');
@@ -343,6 +504,153 @@
     if(!el) return;
     el.addEventListener('mouseenter', ()=> showTT(el, n.title, n.text));
     el.addEventListener('mouseleave', hideTT);
+  });
+
+  // ---------- Override Imprimer pour n'imprimer que la feuille de personnage ----------
+  (function(){
+    const btn = document.getElementById('btn-print');
+    if(!btn) return;
+    const clone = btn.cloneNode(true);
+    btn.parentNode.replaceChild(clone, btn);
+    clone.addEventListener('click', ()=>{
+      const pts = (document.getElementById('points-counter')?.textContent||'0');
+      const d = new Date();
+      const fmt = d.toLocaleString('fr-FR', { year:'numeric', month:'2-digit', day:'2-digit', hour:'2-digit', minute:'2-digit' });
+      const styles = Array.from(document.querySelectorAll('style, link[rel="stylesheet"]'))
+        .map(el => el.tagName.toLowerCase()==='style' ? el.innerHTML : '')
+        .join('\n');
+      const sheet = document.getElementById('sheet');
+      const headerHTML = `<div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:8px;font-family:ui-sans-serif,system-ui,-apple-system,Segoe UI,Roboto,Helvetica Neue,Arial;color:#000">
+        <div style=\"font-weight:800;font-size:14pt\">Amertüme — Feuille de personnage</div>
+        <div style=\"font-size:10pt\">Points: ${pts} · ${fmt}</div>
+      </div>`;
+      const html = `<!doctype html><html><head><meta charset=\"utf-8\"><title>Feuille de personnage</title>
+<style>${styles}</style>
+<style>@page{size:A4 portrait;margin:10mm} body{background:#fff;-webkit-print-color-adjust:exact;print-color-adjust:exact}</style>
+</head><body>${headerHTML}${sheet?sheet.outerHTML:''}</body></html>`;
+      const w = window.open('', '_blank');
+      if(!w){ alert('Pop-up bloqué. Autorise les fenêtres pop-up pour exporter.'); return; }
+      w.document.open(); w.document.write(html); w.document.close();
+      w.onload = ()=>{ w.print(); w.close(); };
+    });
+  })();
+
+  // --------- ÉDITION (modal) ---------
+  const modal = document.getElementById('talent-modal');
+  const closeBtn = document.getElementById('tm-close');
+  const cancelBtn = document.getElementById('tm-cancel');
+  const saveBtn = document.getElementById('tm-save');
+  const inTitle = document.getElementById('tm-input-title');
+  const inDesc  = document.getElementById('tm-input-desc');
+  const inColor = document.getElementById('tm-input-color');
+  const inPts   = document.getElementById('tm-input-points');
+  const inCat   = document.getElementById('tm-input-category');
+  const inX     = document.getElementById('tm-input-x');
+  const inY     = document.getElementById('tm-input-y');
+  let currentId = null;
+  function nodeDef(id){ return nodes.find(n=> n.id===id); }
+
+  function openEditModal(id){
+    const def = nodeDef(id);
+    if(!def) return;
+    currentId = def.id;
+    inTitle.value = def.title || '';
+    inDesc.value  = def.text || '';
+    inColor.value = def.color || 'grey';
+    inPts.value   = def.points ?? 0;
+    inCat.value   = def.category || 'Actions';
+    // positions courantes
+    const el = document.getElementById(def.id);
+    let lx = 0, ty = 0;
+    if(el){
+      const ls = el.style.left || '';
+      const ts = el.style.top  || '';
+      lx = ls.endsWith('px') ? parseInt(ls,10) : el.offsetLeft;
+      ty = ts.endsWith('px') ? parseInt(ts,10) : el.offsetTop;
+    }
+    inX.value = lx;
+    inY.value = ty;
+    modal.classList.add('show');
+    inTitle.focus();
+  }
+  function closeModal(){ modal.classList.remove('show'); currentId=null; }
+
+  [closeBtn, cancelBtn].forEach(b=> b && b.addEventListener('click', closeModal));
+  modal.addEventListener('click', (e)=>{ if(e.target === modal || e.target.classList.contains('modal-backdrop')) closeModal(); });
+  window.addEventListener('keydown', (e)=>{ if(e.key==='Escape' && modal.classList.contains('show')) closeModal(); });
+
+  saveBtn.addEventListener('click', ()=>{
+    if(!currentId) return;
+    const def = nodeDef(currentId);
+    if(!def) return;
+    const before = {...def};
+
+    // Nettoyage helpers
+    const toInt = (v, fallback=0)=>{ const n = parseInt(v,10); return Number.isFinite(n)? n : fallback; };
+
+    def.title = inTitle.value.trim();
+    def.text  = inDesc.value.trim();
+    def.color = inColor.value;
+    def.points = Math.max(0, toInt(inPts.value,0));
+    def.category = inCat.value || def.category;
+
+    // Mettre à jour le DOM
+    const el = document.getElementById(def.id);
+    if(el){
+      // Titre / desc
+      const titleEl = el.querySelector('.title, .subtitle');
+      const descEl  = el.querySelector('.desc, .body');
+      if(titleEl) titleEl.textContent = def.title;
+      if(descEl)  descEl.textContent  = def.text;
+      // Couleurs
+      el.classList.remove('grey','green','teal','cream','red');
+      el.classList.add(def.color);
+      // Points badge
+      const badge = el.querySelector('.badge-points');
+      if(badge) badge.textContent = String(def.points);
+      // Position
+      const nx = toInt(inX.value, el.offsetLeft);
+      const ny = toInt(inY.value, el.offsetTop);
+      el.style.left = nx + 'px';
+      el.style.top  = ny + 'px';
+    }
+
+    // Recalcul affichages
+    renderSheet();
+    drawLinks();
+    updateLinks();
+
+    // Console preview enrichi
+    const after = {...def};
+    const elNow = document.getElementById(def.id);
+    const posX = elNow ? parseInt(elNow.style.left||elNow.offsetLeft,10) : 0;
+    const posY = elNow ? parseInt(elNow.style.top||elNow.offsetTop,10) : 0;
+    const diff = {
+      id: def.id,
+      title: before.title + '  ➜  ' + after.title,
+      text:  (before.text||'')  + '  ➜  ' + (after.text||''),
+      color: before.color + '  ➜  ' + after.color,
+      points: before.points + '  ➜  ' + after.points,
+      category: (before.category||'') + '  ➜  ' + (after.category||''),
+      position: `${posX}px, ${posY}px`
+    };
+    console.groupCollapsed(`%c💾 Talent mis à jour: ${def.id}`, 'background:#7dd3fc;color:#0b0f14;padding:2px 6px;border-radius:6px;font-weight:700');
+    console.table(diff);
+    const preview =
+`┌──────────────────────────────┐
+│ ${(after.title||'').padEnd(28,' ')} │
+├──────────────────────────────┤
+│ ${(after.text||'').slice(0,40).padEnd(28,' ')} │
+├───────┬──────────────┬───────┤
+│ Cat: ${(after.category||'').padEnd(10,' ')}│ Couleur: ${(after.color||'').padEnd(8,' ')}│ Pts: ${String(after.points).padEnd(3,' ')}│
+├───────┴──────────────┴───────┤
+│ Pos: ${String(posX).padEnd(4,' ')}×${String(posY).padEnd(4,' ')}           │
+└──────────────────────────────┘`;
+    console.log('%cAperçu','color:#7dd3fc;');
+    console.log(preview);
+    console.groupEnd();
+
+    closeModal();
   });
 })();
 </script>
