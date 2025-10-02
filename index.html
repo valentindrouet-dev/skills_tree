@@ -92,10 +92,10 @@
 
       <!-- Nœuds -->
       <div class="node grey" id="n1" style="left:60px; top:70px">
-        <div class="title">Sans mouvement</div>
-        <div class="desc">Vous effectuez <b>1 analyse standard</b>.</div>
+        <div class="title">Analyse</div>
+        <div class="desc">Sans mouvement, vous effectuez <b>1 analyse standard</b>.</div>
         <div class="badge-check">☑︎</div>
-        <div class="badge-points">2</div>
+        <div class="badge-points">1</div>
       </div>
 
       <div class="node green" id="n2" style="left:60px; top:250px">
@@ -153,7 +153,7 @@
 
   // Définitions des nœuds
   const nodes = [
-    { id:'n1', title:'Sans mouvement', text:'Effectuez 1 analyse standard.', req:[], unlock:['n2','n3'], category:'Actions', color:'grey', points:2 },
+    { id:'n1', title:'Analyse', text:'Sans mouvement, vous effectuez 1 analyse standard.', req:[], unlock:['n2','n3'], category:'Actions', color:'grey', points:2 },
     { id:'n2', title:'Analyses supérieures', text:'Vous pouvez effectuer des analyses de niveau 2.', req:['n1'], unlock:['n4'], category:'Actions', color:'green', points:2 },
     { id:'n3', title:'Endu +2', text:"Augmente l'Endurance de +2.", req:['n1'], unlock:[], category:'Stat-Endu', color:'teal', points:1 },
     { id:'n4', title:'Dégâts +2', text:'Augmente les dégâts de +2.', req:['n2'], unlock:[], category:'Stat-Dégâts', color:'cream', points:1 }
